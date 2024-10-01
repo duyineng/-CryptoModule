@@ -1,0 +1,16 @@
+.vs
+/Client/ClientCryptoModule/ClientCryptoModule.vcxproj.user
+/Client/ClientCryptoModule/log
+/Client/ClientCryptoModule/x64/Debug/SimpleLogger.obj
+/Client/ClientCryptoModule/x64/Debug/TcpClient.obj
+/Client/ClientCryptoModule/x64/Debug/TcpComm.obj
+/Client/ClientCryptoModule/x64/Debug/vc143.idb
+/Client/ClientCryptoModule/x64/Debug/vc143.pdb
+/Client/ClientCryptoModule/x64/Debug/ClientCr.a7e6d9e0.tlog
+/Client/ClientCryptoModule/x64/Debug/ClientCryptoModule.exe
+/Client/ClientCryptoModule/x64/Debug/ClientCryptoModule.exe.recipe
+/Client/ClientCryptoModule/x64/Debug/ClientCryptoModule.ilk
+/Client/ClientCryptoModule/x64/Debug/ClientCryptoModule.log
+/Client/ClientCryptoModule/x64/Debug/ClientCryptoModule.pdb
+/Client/ClientCryptoModule/x64/Debug/ClientCryptoModule.vcxproj.FileListAbsolute.txt
+/Client/ClientCryptoModule/x64/Debug/main.obj

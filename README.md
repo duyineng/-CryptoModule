@@ -1,0 +1,7 @@
+Client文件夹用来存放客户端程序的代码，客户端程序部署于windows平台
+
+Server文件夹用来存放服务器程序的代码，服务器程序部署于linux平台
+
+ExternalEncryptionInterface为外联接口类的源代码
+
+shared为客户端程序和服务器程序两者公用的代码
