@@ -24,7 +24,7 @@
     <ClCompile Include="TcpComm.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="SimpleLogger.cpp">
+    <ClCompile Include="..\..\share\SimpleLogger.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -35,7 +35,7 @@
     <ClInclude Include="TcpComm.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="SimpleLogger.h">
+    <ClInclude Include="..\..\share\SimpleLogger.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
