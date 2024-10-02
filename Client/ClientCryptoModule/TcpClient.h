@@ -16,7 +16,7 @@ public:
 	SOCKET getFd() const;
 
 private:
-	int connectTimeout(int timeout);
+	int connectTimeout(unsigned int timeout);
 	int setBlock(SOCKET fd);
 	int setNonBlock(SOCKET fd);
 	void closeFd();

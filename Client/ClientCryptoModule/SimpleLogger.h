@@ -19,7 +19,7 @@ public:
     void log(Level level, const std::string& message, const char* file, int line, const char* function);
 
 private:
-    SimpleLogger(const std::string& filename);      // 构造函数私有化
+    SimpleLogger(const std::string& filename);              // 构造函数私有化
 
     SimpleLogger(const SimpleLogger&) = delete;             // 删除拷贝构造
     SimpleLogger& operator=(const SimpleLogger&) = delete;  // 删除拷贝赋值运算符

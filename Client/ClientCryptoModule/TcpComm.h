@@ -11,7 +11,8 @@ class TcpComm
 public:
 	enum class ErrorType { SUCCESS, TIMEOUT, PEER_CLOSE, ERROR2 };
 
-	explicit TcpComm(SOCKET fd);
+
+	explicit TcpComm(SOCKET&& fd);
 	~TcpComm();
 
 	ErrorType sendMsg(const std::string& data, int timeout = 100);
@@ -27,7 +28,5 @@ private:
 
 	SOCKET m_fd = INVALID_SOCKET;
 };
-
-inline TcpComm::TcpComm(SOCKET fd) : m_fd(fd) {}
 
 inline SOCKET TcpComm::getFd() const { return m_fd; }

@@ -7,6 +7,12 @@
 #include "TcpComm.h"
 #include "SimpleLogger.h" 
 
+TcpComm::TcpComm(SOCKET&& fd)
+	: m_fd(fd)
+{
+	fd = INVALID_SOCKET;
+}
+
 TcpComm::~TcpComm()
 {
 	closeFd();

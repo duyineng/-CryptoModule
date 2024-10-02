@@ -48,7 +48,6 @@ int TcpClient::setupClientSocket(const std::string& ip, uint16_t port)
 
 std::unique_ptr<TcpComm> TcpClient::connToHost(int timeout)
 {
-
     // 开始连接服务器，并设置连接超时时间
     int flag = connectTimeout(timeout);
     if (flag < 0)
@@ -64,13 +63,13 @@ std::unique_ptr<TcpComm> TcpClient::connToHost(int timeout)
         return nullptr;
     }
 
-    return std::make_unique<TcpComm>(m_fd);
+    return std::make_unique<TcpComm>(std::move(m_fd));
     // return std::unique_ptr<TcpComm>(new TcpComm(m_fd));  了解一下区别
 }
 
-int TcpClient::connectTimeout(int timeout)
+int TcpClient::connectTimeout(unsigned int timeout)
 {
-    if (timeout <= 0)
+    if (timeout == 0)
     {
         LOG_ERROR( "timeout value is invalid");
         return -1;
@@ -91,25 +90,40 @@ int TcpClient::connectTimeout(int timeout)
         LOG_INFO("connect established immediately");
         return setBlock(m_fd);
     }
-    else if (ret == SOCKET_ERROR)
+    else  
     {
-        if (WSAGetLastError() != WSAEWOULDBLOCK)    // 连接立即失败，但不是因为正在进行中
-        {
+        // 此时ret == SOCKET_ERROR
+        if (WSAGetLastError() != WSAEWOULDBLOCK)    
+        {   
+            // 连接立即失败，但不是因为正在进行中
             LOG_ERROR( "connection failed immediately, but not because it was in progess, error code: " + std::to_string(WSAGetLastError()));
             setBlock(m_fd);
             return -1;
         }
-        else if (WSAGetLastError() == EINPROGRESS)  // 表示连接正在进行中
+        else    
         {
+            // 此时WSAGetLastError() == WSAEWOULDBLOCK，连接立即失败，但表示此时连接正在进行中
             fd_set wFdSet;
             FD_ZERO(&wFdSet);
             FD_SET(m_fd, &wFdSet);
 
             struct timeval tv = { timeout, 0 };
 
+            /*
+             * 1. m_fd 已被设置为非阻塞模式。
+             * 2. connect() 调用后立即返回，此时连接可能尚未建立。
+             * 3. 随后的 select() 调用用于监视这个特殊状态的套接字：
+             *    - 即使 m_fd 套接字本身可写，select() 也不会立即返回。
+             *    - select() 会等待直到以下情况之一发生：
+             *      a) 连接成功建立
+             *      b) 连接尝试失败
+             *      c) 达到指定的超时时间
+             * 4. 这种机制允许我们在非阻塞模式下实现带超时的连接尝试。
+             */
             do {
                 ret = select(0, nullptr, &wFdSet, nullptr, &tv);    // 在windows中，第一个参数是被忽略的，只需要wFdSet就可以
             } while (ret == -1 && WSAGetLastError() == EINTR);      // 被信号打断
+
             if (ret == 0)
             {
                 // 连接超时
@@ -124,11 +138,12 @@ int TcpClient::connectTimeout(int timeout)
                 setBlock(m_fd);
                 return -1;
             }
-            else if (ret == 1)  // select 返回 1，检查连接是否真的成功
+            else
             {
+                // select 返回 1，检查连接是否真的成功
                 int error;
-                socklen_t error_len = sizeof(error);
-                if (getsockopt(m_fd, SOL_SOCKET, SO_ERROR, (char*)&error, &error_len) == SOCKET_ERROR)
+                socklen_t errorLen = sizeof(error);
+                if (getsockopt(m_fd, SOL_SOCKET, SO_ERROR, (char*)&error, &errorLen) == SOCKET_ERROR)
                 {
                     LOG_ERROR("getsockopt() error: " + std::to_string(WSAGetLastError()));
                     setBlock(m_fd);
