@@ -21,7 +21,7 @@
     <ClCompile Include="TcpClient.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="TcpComm.cpp">
+    <ClCompile Include="TcpCommunication.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\share\SimpleLogger.cpp">
@@ -32,7 +32,7 @@
     <ClInclude Include="TcpClient.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="TcpComm.h">
+    <ClInclude Include="TcpCommunication.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\share\SimpleLogger.h">

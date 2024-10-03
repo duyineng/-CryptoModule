@@ -133,12 +133,12 @@
     <ClCompile Include="..\..\share\SimpleLogger.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="TcpClient.cpp" />
-    <ClCompile Include="TcpComm.cpp" />
+    <ClCompile Include="TcpCommunication.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\share\SimpleLogger.h" />
     <ClInclude Include="TcpClient.h" />
-    <ClInclude Include="TcpComm.h" />
+    <ClInclude Include="TcpCommunication.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

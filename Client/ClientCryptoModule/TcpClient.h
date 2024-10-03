@@ -2,7 +2,7 @@
 #include <WinSock2.h>
 #include <WS2tcpip.h>
 #include <memory>
-#include "TcpComm.h"
+#include "TcpCommunication.h"
 
 #pragma comment(lib, "Ws2_32.lib")
 
@@ -12,20 +12,20 @@ public:
 	TcpClient() = default;
 	~TcpClient();
 	int setupClientSocket(const std::string& ip, uint16_t port);
-	std::unique_ptr<TcpComm> connToHost(int timeout = 100);
-	SOCKET getFd() const;
+	std::unique_ptr<TcpCommunication> connectToServer(int timeout = 100);
+	SOCKET getSocket() const;
 
 private:
 	int connectTimeout(unsigned int timeout);
-	int setBlock(SOCKET fd);
-	int setNonBlock(SOCKET fd);
-	void closeFd();
+	int setBlock(SOCKET socket);
+	int setNonBlock(SOCKET socket);
+	void closeSocket();
 
 protected:
-	SOCKET  m_fd = INVALID_SOCKET;
-	struct sockaddr_in m_servAddr {};	
-	socklen_t m_servLen;
+	SOCKET  m_socket = INVALID_SOCKET;
+	struct sockaddr_in m_serverAddress{};
+	socklen_t m_serverAddressLength;
 };
 
-inline SOCKET TcpClient::getFd() const { return m_fd; }
+inline SOCKET TcpClient::getSocket() const { return m_socket; }
 

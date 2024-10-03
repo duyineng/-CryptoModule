@@ -1,6 +1,6 @@
 ﻿#include <WinSock2.h>
 #include "TcpClient.h" 
-#include "TcpComm.h"
+#include "TcpCommunication.h"
 #include "SimpleLogger.h"
 
 #pragma comment(lib, "Ws2_32.lib")
@@ -29,7 +29,7 @@ int main()
     }
 
     // 4. 连接到服务器
-    auto comm = client.connToHost();
+    auto comm = client.connectToServer();
     if (!comm) 
     {
         LOG_ERROR("Failed to connect to server");
@@ -40,7 +40,7 @@ int main()
     // 使用连接进行通信
     // 例如，发送消息
     std::string message = "Hello, Server!";
-    if (comm->sendMsg(message) != TcpComm::ErrorType::SUCCESS) 
+    if (comm->sendMessage(message) != TcpCommunication::ErrorType::SUCCESS)
     {
         LOG_ERROR("Failed to send message");
     }
@@ -51,7 +51,7 @@ int main()
 
     // 接收响应
     std::string response;
-    if (comm->recvMsg(response) == TcpComm::ErrorType::SUCCESS) 
+    if (comm->receiveMessage(response) == TcpCommunication::ErrorType::SUCCESS)
     {
         LOG_INFO("Received response:" + response);
         LOG_ERROR("Failed to send message");
