@@ -3,19 +3,20 @@
 #include <fcntl.h>
 #include <cstring>
 #include <vector>
-#include <iostream>
+#include <arpa/inet.h>
 #include "TcpCommunication.h"
-#include "SimpleLogger.h" 
+#include "../share/SimpleLogger.h" 
+#include <unistd.h>
 
-TcpCommunication::TcpCommunication(SOCKET&& socket)
-	: m_socket(socket)
+TcpCommunication::TcpCommunication(int&& fd)
+	: m_fd(fd)
 {
-	socket = INVALID_SOCKET;
+	fd = -1;
 }
 
 TcpCommunication::~TcpCommunication()
 {
-	closeSocket();
+	closeFd();
 }
 
 TcpCommunication::ErrorType TcpCommunication::sendMessage(const std::string& data, int timeout)
@@ -64,7 +65,7 @@ TcpCommunication::ErrorType TcpCommunication::receiveMessage(std::string& outDat
 	ret = receiveLength(&dataLengthNetByte, 4);	// 绝对不阻塞，因为已经检测到套接字可读。先读取前4个字节，并写入dataLengthNetByte中
 	if (ret != ErrorType::SUCCESS)
 	{
-		LOG_ERROR("receiveLength() dataSizeNetByte is not successfully");
+		LOG_ERROR("recvn() dataSizeNetByte is not successfully");
 		return ErrorType::ERROR2;
 	}
 
@@ -74,7 +75,7 @@ TcpCommunication::ErrorType TcpCommunication::receiveMessage(std::string& outDat
 	ret = receiveLength(recvBuf.data(), recvBuf.size());	// 读到recvBuf.data()里面，读取recvBuf.size()个字节
 	if (ret != ErrorType::SUCCESS)
 	{
-		LOG_ERROR("Call receiveLength function to receive data is not successfully");
+		LOG_ERROR("recvn() data is not successfully");
 		return ErrorType::ERROR2;
 	}
 
@@ -84,15 +85,15 @@ TcpCommunication::ErrorType TcpCommunication::receiveMessage(std::string& outDat
 }
 
 // 关闭套接字
-void TcpCommunication::closeSocket()
+void TcpCommunication::closeFd()
 {
-	if (m_socket != INVALID_SOCKET)
+	if (m_fd != -1)
 	{
-		if (closesocket(m_socket) == SOCKET_ERROR)
+		if (close(m_fd) == -1)
 		{
-			LOG_ERROR("close socket error, error code: " + std::to_string(WSAGetLastError()));
+			LOG_ERROR("Close fd error, error code: " + std::string(std::strerror(errno)));
 		}
-		m_socket = INVALID_SOCKET;
+		m_fd = -1;
 	}
 }
 
@@ -103,7 +104,7 @@ TcpCommunication::ErrorType TcpCommunication::sendTimeout(unsigned int timeout)
 	// 设置select函数所监听的写缓冲区集合
 	fd_set writefds;
 	FD_ZERO(&writefds);
-	FD_SET(m_socket, &writefds);
+	FD_SET(m_fd, &writefds);
 
 	// 设置select函数的监听超时时长
 	timeval selectTimeout = { timeout,0 };
@@ -111,10 +112,10 @@ TcpCommunication::ErrorType TcpCommunication::sendTimeout(unsigned int timeout)
 	int ret;
 	do {
 		ret = select(0, NULL, &writefds, NULL, &selectTimeout);
-	} while (ret == SOCKET_ERROR && WSAGetLastError() == WSAEINTR);
-	if (ret == SOCKET_ERROR)
+	} while (ret == -1 && errno == EINTR);
+	if (ret == -1)
 	{
-		LOG_ERROR("select() error, error code: " + std::to_string(WSAGetLastError()));
+		LOG_ERROR("select() error, error code: " + std::string(std::strerror(errno)));
 		return ErrorType::ERROR2;	
 	}
 	else if (ret == 0)
@@ -123,7 +124,7 @@ TcpCommunication::ErrorType TcpCommunication::sendTimeout(unsigned int timeout)
 		return ErrorType::TIMEOUT;
 	}
 
-	LOG_INFO("socket is writable");
+	LOG_INFO("File descriptor is writable");
 	return ErrorType::SUCCESS;	
 }
 
@@ -135,16 +136,16 @@ TcpCommunication::ErrorType TcpCommunication::sendLength(const void* buffer, siz
 
 	while (remainLength > 0)
 	{
-		int nSend = send(m_socket, currentBuffer, remainLength, 0);
-		if (nSend == SOCKET_ERROR)
+		int nSend = send(m_fd, currentBuffer, remainLength, 0);
+		if (nSend == -1)
 		{
-			if (WSAGetLastError() == WSAEINTR)
+			if (errno == EINTR)
 			{
 				continue;
 			}
 			else
 			{
-				LOG_ERROR("send error, error code: " + std::to_string(WSAGetLastError()));
+				LOG_ERROR("Failed to call send function, error code: " + std::string(strerror(errno)));
 				return ErrorType::ERROR2;
 			}
 		}
@@ -166,18 +167,18 @@ TcpCommunication::ErrorType TcpCommunication::receiveTimeout(unsigned int timeou
 {
 	fd_set readfds;
 	FD_ZERO(&readfds);
-	FD_SET(m_socket, &readfds);
+	FD_SET(m_fd, &readfds);
 
 	timeval selectTimeout = { timeout,0 };
 
 	int ret;
 	do {
 		ret = select(0, &readfds, NULL, NULL, &selectTimeout);
-	} while (ret == SOCKET_ERROR && WSAGetLastError() == WSAEINTR);	// 被信号打断
+	} while (ret == -1 && errno == EINTR);	// 被信号打断
 
-	if (ret == SOCKET_ERROR)
+	if (ret == -1)
 	{
-		LOG_ERROR("select error, error code: " + std::to_string(WSAGetLastError()));
+		LOG_ERROR("select error, error code: " + std::string(strerror(errno)));
 		return ErrorType::ERROR2;
 	}
 	else if (ret == 0)
@@ -197,22 +198,22 @@ TcpCommunication::ErrorType TcpCommunication::receiveLength(void* buffer, size_t
 
 	while (remainLength > 0)
 	{
-		int nRecv = recv(m_socket, currentBuffer, remainLength, 0);
-		if (nRecv == SOCKET_ERROR)
+		int nRecv = recv(m_fd, currentBuffer, remainLength, 0);
+		if (nRecv == -1)
 		{
-			if (WSAGetLastError() == WSAEINTR)
+			if (errno == EINTR)
 			{
 				continue;
 			}
 			else
 			{
-				LOG_ERROR("recv() error, error code: " + std::to_string(WSAGetLastError()));
+				LOG_ERROR("recv() error, error code: " + std::string(strerror(errno)));
 				return ErrorType::ERROR2;
 			}
 		}
 		else if (nRecv == 0)
 		{
-			LOG_WARNING("peer closed connection");
+			LOG_WARNING("Peer closed connection");
 			return ErrorType::PEER_CLOSE;
 		}
 		else if (nRecv > 0)

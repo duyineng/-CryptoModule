@@ -18,7 +18,7 @@ int TcpClient::setupClientSocket(const std::string& ip, uint16_t port)
     constexpr uint16_t MAX_PORT = 65535;
     if (port < MIN_PORT || port > MAX_PORT)
     {
-        LOG_ERROR("invalid port number");
+        LOG_ERROR("Invalid port number");
         return -1;
     }
 
@@ -26,7 +26,7 @@ int TcpClient::setupClientSocket(const std::string& ip, uint16_t port)
     m_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (m_socket == INVALID_SOCKET)
     {
-        LOG_ERROR("create socket error, error code: " + std::to_string(WSAGetLastError()));
+        LOG_ERROR("Create socket error, error code: " + std::to_string(WSAGetLastError()));
         return -1;
     }
 
@@ -35,7 +35,7 @@ int TcpClient::setupClientSocket(const std::string& ip, uint16_t port)
     int flag = inet_pton(AF_INET, ip.c_str(), &m_serverAddress.sin_addr.s_addr); // 将IP地址从字符串格式转换为网络字节序的二进制格式
     if (flag != 1)
     {
-        LOG_ERROR( "set server address struct error, error code: " + std::to_string(WSAGetLastError()));
+        LOG_ERROR( "Set server address struct error, error code: " + std::to_string(WSAGetLastError()));
         closeSocket();
         return -1;
     }
@@ -49,16 +49,9 @@ std::unique_ptr<TcpCommunication> TcpClient::connectToServer(int timeout)
 {
     // 开始连接服务器，并设置连接超时时间
     int flag = connectTimeout(timeout);
-    if (flag < 0)
+    if (flag != 0)
     {
-        if (WSAGetLastError() == WSAETIMEDOUT)  // 连接超时
-        {
-            LOG_ERROR( "connect to server timed out, error code: " + std::to_string(WSAGetLastError()));
-        }
-        else                                    
-        {
-            LOG_ERROR( "connect to server error, error code: " + std::to_string(WSAGetLastError()));
-        }
+        LOG_ERROR( "Failed to connect to server");
         return nullptr;
     }
 
@@ -66,18 +59,18 @@ std::unique_ptr<TcpCommunication> TcpClient::connectToServer(int timeout)
     // return std::unique_ptr<TcpCommunication>(new TcpComm(m_socket));  了解一下区别
 }
 
-int TcpClient::connectTimeout(unsigned int timeout)
+int TcpClient::connectTimeout(uint32_t timeout)
 {
     if (timeout == 0)
     {
-        LOG_ERROR( "timeout value is invalid");
+        LOG_ERROR( "Timeout value is invalid");
         return -1;
     }
 
     // 将文件描述符设置成非阻塞，用于connect连接
     if (setNonBlock(m_socket) == -1)
     {
-        LOG_ERROR( "failed to set non-blocking mode during connection attempt");
+        LOG_ERROR( "Failed to set non-blocking mode during connection attempt");
         return -1;  
     }
 
@@ -86,7 +79,7 @@ int TcpClient::connectTimeout(unsigned int timeout)
     if (ret == 0)
     {
         // 立即连接成功，这种情况很少见
-        LOG_INFO("connect established immediately");
+        LOG_INFO("Connection established immediately");
         return setBlock(m_socket);
     }
     else  
@@ -95,13 +88,13 @@ int TcpClient::connectTimeout(unsigned int timeout)
         if (WSAGetLastError() != WSAEWOULDBLOCK)    
         {   
             // 连接立即失败，但不是因为正在进行中
-            LOG_ERROR( "connection failed immediately, but not because it was in progess, error code: " + std::to_string(WSAGetLastError()));
+            LOG_ERROR( "Connection failed immediately, but not because it was in progess, error code: " + std::to_string(WSAGetLastError()));
             setBlock(m_socket);
             return -1;
         }
         else    
         {
-            // 此时WSAGetLastError() == WSAEWOULDBLOCK，连接立即失败，但表示此时连接正在进行中
+            // 连接立即失败，但表示此时连接正在进行中，此时WSAGetLastError() == WSAEWOULDBLOCK
             fd_set writefds;
             FD_ZERO(&writefds);
             FD_SET(m_socket, &writefds);
@@ -126,14 +119,14 @@ int TcpClient::connectTimeout(unsigned int timeout)
             if (ret == 0)
             {
                 // 连接超时
-                LOG_ERROR("select() timed out, error code: " + std::to_string(WSAGetLastError()));
+                LOG_ERROR("Select() timed out");    // WSAGetLastError()不会有错误码
                 setBlock(m_socket);
                 return -1;
             }
             else if (ret == SOCKET_ERROR)
             {
                 // select 错误
-                LOG_ERROR("select() error, error code: " + std::to_string(WSAGetLastError()));
+                LOG_ERROR("Select() error, error code: " + std::to_string(WSAGetLastError()));
                 setBlock(m_socket);
                 return -1;
             }
@@ -144,7 +137,7 @@ int TcpClient::connectTimeout(unsigned int timeout)
                 socklen_t errorLength = sizeof(error);
                 if (getsockopt(m_socket, SOL_SOCKET, SO_ERROR, (char*)&error, &errorLength) == SOCKET_ERROR)
                 {
-                    LOG_ERROR("getsockopt() error: " + std::to_string(WSAGetLastError()));
+                    LOG_ERROR("Getsockopt() error, errno code:" + std::to_string(WSAGetLastError()));
                     setBlock(m_socket);
                     return -1;
                 }
@@ -152,7 +145,7 @@ int TcpClient::connectTimeout(unsigned int timeout)
                 if (error != 0)
                 {
                     // 连接失败
-                    LOG_ERROR("getsockopt()'s error != 0, error code: " + std::to_string(WSAGetLastError()));
+                    LOG_ERROR("getsockopt()'s error != 0, error value: " + std::to_string(error));
                     setBlock(m_socket);
                     return -1;
                 }
@@ -161,7 +154,7 @@ int TcpClient::connectTimeout(unsigned int timeout)
     }
 
     // 连接成功，设置回阻塞模式
-    LOG_INFO("connect to server successedd");
+    LOG_INFO("Connect to server successedd");
     return setBlock(m_socket);
 }
  
@@ -171,7 +164,7 @@ int TcpClient::setNonBlock(SOCKET socket)
     u_long mode = 1;
     if (ioctlsocket(socket, FIONBIO, &mode) == SOCKET_ERROR)
     {
-        LOG_ERROR( "failed to set the file descriptor to non-blocking mode, error code: " + std::to_string(WSAGetLastError()));
+        LOG_ERROR( "Failed to set the file descriptor to non-blocking mode, error code: " + std::to_string(WSAGetLastError()));
         return -1;
     }
     return 0;
@@ -182,7 +175,7 @@ int TcpClient::setBlock(SOCKET socket)
     u_long mode = 0;
     if (ioctlsocket(socket, FIONBIO, &mode) == SOCKET_ERROR)
     {
-        LOG_ERROR( "failed to set the file descriptor to blocking mode, error code: " + std::to_string(WSAGetLastError()));
+        LOG_ERROR( "Failed to set the file descriptor to blocking mode, error code: " + std::to_string(WSAGetLastError()));
         return -1;
     }
     return 0;
@@ -194,7 +187,7 @@ void TcpClient::closeSocket()
     {
         if (closesocket(m_socket) == SOCKET_ERROR)
         {
-            LOG_ERROR( "close socket error, error code: " + std::to_string(WSAGetLastError()));
+            LOG_ERROR( "Close socket error, error code: " + std::to_string(WSAGetLastError()));
         }
         m_socket = INVALID_SOCKET;
     }

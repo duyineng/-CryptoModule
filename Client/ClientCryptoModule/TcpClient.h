@@ -16,7 +16,7 @@ public:
 	SOCKET getSocket() const;
 
 private:
-	int connectTimeout(unsigned int timeout);
+	int connectTimeout(uint32_t timeout);
 	int setBlock(SOCKET socket);
 	int setNonBlock(SOCKET socket);
 	void closeSocket();
