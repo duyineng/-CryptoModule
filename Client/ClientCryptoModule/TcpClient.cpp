@@ -26,7 +26,7 @@ int TcpClient::setupClientSocket(const std::string& ip, uint16_t port)
     m_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (m_socket == INVALID_SOCKET)
     {
-        LOG_ERROR("Create socket error, error code: " + std::to_string(WSAGetLastError()));
+        LOG_ERROR("Failed to create socket, error code: " + std::to_string(WSAGetLastError()));
         return -1;
     }
 
@@ -35,7 +35,7 @@ int TcpClient::setupClientSocket(const std::string& ip, uint16_t port)
     int flag = inet_pton(AF_INET, ip.c_str(), &m_serverAddress.sin_addr.s_addr); // 将IP地址从字符串格式转换为网络字节序的二进制格式
     if (flag != 1)
     {
-        LOG_ERROR( "Set server address struct error, error code: " + std::to_string(WSAGetLastError()));
+        LOG_ERROR( "Failed to set server address struct, error code: " + std::to_string(WSAGetLastError()));
         closeSocket();
         return -1;
     }
@@ -119,14 +119,14 @@ int TcpClient::connectTimeout(uint32_t timeout)
             if (ret == 0)
             {
                 // 连接超时
-                LOG_ERROR("Select() timed out");    // WSAGetLastError()不会有错误码
+                LOG_ERROR("Select funciton timed out");    // WSAGetLastError()不会有错误码
                 setBlock(m_socket);
                 return -1;
             }
             else if (ret == SOCKET_ERROR)
             {
                 // select 错误
-                LOG_ERROR("Select() error, error code: " + std::to_string(WSAGetLastError()));
+                LOG_ERROR("Failed to call select function, error code: " + std::to_string(WSAGetLastError()));
                 setBlock(m_socket);
                 return -1;
             }
@@ -137,7 +137,7 @@ int TcpClient::connectTimeout(uint32_t timeout)
                 socklen_t errorLength = sizeof(error);
                 if (getsockopt(m_socket, SOL_SOCKET, SO_ERROR, (char*)&error, &errorLength) == SOCKET_ERROR)
                 {
-                    LOG_ERROR("Getsockopt() error, errno code:" + std::to_string(WSAGetLastError()));
+                    LOG_ERROR("Failed to call getsockopt function, error code: " + std::to_string(WSAGetLastError()));
                     setBlock(m_socket);
                     return -1;
                 }
@@ -145,7 +145,7 @@ int TcpClient::connectTimeout(uint32_t timeout)
                 if (error != 0)
                 {
                     // 连接失败
-                    LOG_ERROR("getsockopt()'s error != 0, error value: " + std::to_string(error));
+                    LOG_ERROR("Getsockopt function's error != 0, error value: " + std::to_string(error));
                     setBlock(m_socket);
                     return -1;
                 }
@@ -187,7 +187,7 @@ void TcpClient::closeSocket()
     {
         if (closesocket(m_socket) == SOCKET_ERROR)
         {
-            LOG_ERROR( "Close socket error, error code: " + std::to_string(WSAGetLastError()));
+            LOG_ERROR( "Failed to close socket, error code: " + std::to_string(WSAGetLastError()));
         }
         m_socket = INVALID_SOCKET;
     }

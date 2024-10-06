@@ -11,6 +11,7 @@ class TcpClient
 public:
 	TcpClient() = default;
 	~TcpClient();
+
 	int setupClientSocket(const std::string& ip, uint16_t port);
 	std::unique_ptr<TcpCommunication> connectToServer(int timeout = 100);
 	SOCKET getSocket() const;
