@@ -85,6 +85,7 @@ std::unique_ptr<TcpCommunication> TcpServer::acceptFromClient(int timeout)
         return nullptr;
     }
 
+	LOG_INFO("Accepting from client successfully"); 	
     return std::make_unique<TcpCommunication>(std::move(cfd));
     // return std::unique_ptr<TcpCommunication>(new TcpCommunication(std::move(cfd)));	// 成功，返回独占的智能指针对象
 }
