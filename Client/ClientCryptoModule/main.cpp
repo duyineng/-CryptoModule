@@ -11,23 +11,23 @@ int main()
     WSADATA wsaData;
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) 
     {
-        LOG_ERROR("init winsock fialed");
+        LOG_ERROR("Init winsock fialed");
         return 1;
     }
 
     // 创建 TcpClient 对象
     TcpClient client;
+    LOG_INFO("Before setup client socket, the client socket is: " + std::to_string(client.getSocket()));
 
     // 设置客户端套接字
-    const std::string serverIP = "127.0.0.1";  // 替换为实际的服务器 IP
-    const uint16_t serverPort = 8080;          // 替换为实际的服务器端口
-    if (client.setupClientSocket(serverIP, serverPort) != 0) 
+    if (client.setupClientSocket("192.168.1.105", 9527) != 0)
     {
         LOG_ERROR("Failed to setup client socket");
         WSACleanup();
         return 1;
     }
-
+    
+    LOG_INFO("Before connecting to server, client socket: " + std::to_string(client.getSocket()));
     // 4. 连接到服务器
     auto comm = client.connectToServer();
     if (!comm) 
@@ -37,6 +37,11 @@ int main()
         return 1;
     }
 
+    LOG_INFO("After connecting  to server, client socket: " + std::to_string(client.getSocket()));
+    LOG_INFO("After connecting  to server, TcpCommunication instance socket descriptor: " + std::to_string(comm->getSocket()));
+
+    while (1);
+
     // 使用连接进行通信
     // 例如，发送消息
     std::string message = "Hello, Server!";
@@ -44,10 +49,9 @@ int main()
     {
         LOG_ERROR("Failed to send message");
     }
-    else 
-    {
+        
         LOG_INFO("Message sent successfully");
-    }
+ 
 
     // 接收响应
     std::string response;
