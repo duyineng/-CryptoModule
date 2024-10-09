@@ -19,3 +19,5 @@
 .vscode/
 
 /Client/ClientCryptoModule/log.txt
+share/codec/Message.pb.cc
+share/codec/Message.pb.h
