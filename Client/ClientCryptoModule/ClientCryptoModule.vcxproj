@@ -71,7 +71,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir)..\..\share\;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)include;$(ProjectDir)..\..\share\codec;$(ProjectDir)..\..\share\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -105,12 +106,14 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;PROTOBUF_USE_DLLS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>libprotobufd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -130,12 +133,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\share\codec\Message.pb.cc" />
+    <ClCompile Include="..\..\share\codec\RequestCodec.cpp" />
+    <ClCompile Include="..\..\share\codec\RequestCodecFactory.cpp" />
+    <ClCompile Include="..\..\share\codec\ResponseCodec.cpp" />
+    <ClCompile Include="..\..\share\codec\ResponseCodecFactory.cpp" />
     <ClCompile Include="..\..\share\SimpleLogger.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="TcpClient.cpp" />
     <ClCompile Include="TcpCommunication.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\share\codec\Codec.hpp" />
+    <ClInclude Include="..\..\share\codec\CodecFactory.hpp" />
+    <ClInclude Include="..\..\share\codec\Message.pb.h" />
+    <ClInclude Include="..\..\share\codec\RequestCodec.h" />
+    <ClInclude Include="..\..\share\codec\RequestCodecFactory.h" />
+    <ClInclude Include="..\..\share\codec\ResponseCodec.h" />
+    <ClInclude Include="..\..\share\codec\ResponseCodecFactory.h" />
     <ClInclude Include="..\..\share\SimpleLogger.h" />
     <ClInclude Include="TcpClient.h" />
     <ClInclude Include="TcpCommunication.h" />

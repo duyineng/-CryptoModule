@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <string>
 #include "Codec.hpp"
 #include "Message.pb.h"
@@ -17,11 +17,11 @@ class ResponseCodec :
 {
 public:
     ResponseCodec() = default;
-    ResponseCodec(std::string encodedStr);
+    ResponseCodec(const std::string& encodedStr);
     ResponseCodec(const ResponseInformation* respInfo);
     ~ResponseCodec() = default;
 
-    void initFromEncodedString(std::string encodedStr);
+    void initFromEncodedString(const std::string& encodedStr);
     void initFromResponseInformation(const ResponseInformation* respInfo);
     std::string encodeInformation() override;
     std::optional<ResponseInformation> decodeString() override;

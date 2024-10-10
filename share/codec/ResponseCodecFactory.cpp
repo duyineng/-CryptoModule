@@ -1,4 +1,4 @@
-#include "ResponseCodecFactory.h"
+﻿#include "ResponseCodecFactory.h"
  
 ResponseCodecFactory::ResponseCodecFactory(const std::string& encodedStr)
 {
@@ -16,8 +16,8 @@ std::unique_ptr<Codec<ResponseInformation>> ResponseCodecFactory::createCodec()
 {
 	if (m_isEncodedStr == true)
 	{
-		std::make_unique<ResponseCodec>(m_encodedStr);
+		return std::make_unique<ResponseCodec>(m_encodedStr);
 	}
 
-	std::make_unique<ResponseCodec>(m_respInfo);	
+	return std::make_unique<ResponseCodec>(m_respInfo);	
 }

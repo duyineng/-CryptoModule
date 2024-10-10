@@ -1,8 +1,0 @@
-protobuf安装：
-sudo apt install protobuf-compiler
-
-protobuf使用：
-protoc Message.proto --cpp_out=. 
-
-protobuf卸载：
-sudo apt remove protobuf-compiler

@@ -1,7 +1,9 @@
-﻿#include <WinSock2.h>
+﻿#include <memory>
+#include <WinSock2.h>
 #include "TcpClient.h" 
 #include "TcpCommunication.h"
 #include "SimpleLogger.h"
+#include "RequestCodecFactory.h"
 
 #pragma comment(lib, "Ws2_32.lib")
 
@@ -20,10 +22,10 @@ int main()
     LOG_INFO("Before setup client socket, the client socket is: " + std::to_string(client.getSocket()));
 
     // 设置客户端套接字
-    if (client.setupClientSocket("192.168.1.105", 9527) != 0)
+    if (client.setupClientSocket("192.168.1.100", 9527) != 0)
     {
         LOG_ERROR("Failed to setup client socket");
-        WSACleanup();
+        WSACleanup(); 
         return 1;
     }
     
@@ -40,17 +42,25 @@ int main()
     LOG_INFO("After connecting  to server, client socket: " + std::to_string(client.getSocket()));
     LOG_INFO("After connecting  to server, TcpCommunication instance socket descriptor: " + std::to_string(comm->getSocket()));
 
-    while (1);
+    RequestInformation reqInfo = {
+        1,                  // cmdType
+        "server001",        // serverId
+        "client001",        // clientId
+        "some data",        // data
+        "signature"         // sign
+    };
+    RequestCodecFactory reqFactory(&reqInfo);
+
+    std::unique_ptr<Codec<RequestInformation>> reqCodec = reqFactory.createCodec();
+    std::string out = reqCodec->encodeInformation();
 
     // 使用连接进行通信
     // 例如，发送消息
-    std::string message = "Hello, Server!";
-    if (comm->sendMessage(message) != TcpCommunication::ErrorType::SUCCESS)
+    if (comm->sendMessage(out) != TcpCommunication::ErrorType::SUCCESS)
     {
         LOG_ERROR("Failed to send message");
     }
-        
-        LOG_INFO("Message sent successfully");
+    LOG_INFO("Message sent successfully");
  
 
     // 接收响应

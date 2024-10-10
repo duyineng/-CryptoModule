@@ -1,5 +1,4 @@
-#pragma once
-
+﻿#pragma once
 #include "CodecFactory.hpp"
 #include "ResponseCodec.h"
  
@@ -11,7 +10,7 @@ public:
     ResponseCodecFactory(const ResponseInformation* respInfo);
     ~ResponseCodecFactory() = default;
 
-    std::unique_ptr<Codec<ResponseInformation>> createCodec() override;
+    std::unique_ptr<Codec<ResponseInformation>> createCodec() override; // 创建ResponseCodec实例
 private:
     bool m_isEncodedStr;
     std::string m_encodedStr;

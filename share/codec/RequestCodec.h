@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <string.h>
 #include "Codec.hpp"
 #include "Message.pb.h"
@@ -17,11 +17,11 @@ class RequestCodec:
 {
 public:
     RequestCodec() = default;
-    RequestCodec(std::string encodedStr);   // 传入已经编码过的字符串   
-    RequestCodec(const RequestInformation* reqInfo);     // 传入编码前的结构体对象
+    RequestCodec(const std::string& encodedStr);        // 传入已经序列化的字符串   
+    RequestCodec(const RequestInformation* reqInfo);    // 传入序列化前的结构体对象指针
     ~RequestCodec() = default;
 
-    void initFromEncodedString(std::string encodedStr);	
+    void initFromEncodedString(const std::string& encodedStr);
     void initFromRequestInformation(const RequestInformation* reqInfo);
     std::string encodeInformation() override;
     std::optional<RequestInformation> decodeString() override;

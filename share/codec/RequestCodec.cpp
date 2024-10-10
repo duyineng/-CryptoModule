@@ -1,8 +1,8 @@
-#include "RequestCodec.h"
+﻿#include "RequestCodec.h"
 #include "../../share/SimpleLogger.h"
 
  
-RequestCodec::RequestCodec(std::string encodedStr)
+RequestCodec::RequestCodec(const std::string& encodedStr)
 	: m_encodedStr(encodedStr)
 {
 }
@@ -16,7 +16,7 @@ RequestCodec::RequestCodec(const RequestInformation* reqInfo)
 	m_reqMsg.set_sign(reqInfo->sign);
 }
 
-void RequestCodec::initFromEncodedString(std::string encodedStr)
+void RequestCodec::initFromEncodedString(const std::string& encodedStr)
 {
 	m_encodedStr = encodedStr;
 }
@@ -59,4 +59,3 @@ std::optional<RequestInformation> RequestCodec::decodeString()
 
 	return reqInfo;
 }
-template class Codec<RequestInformation>;

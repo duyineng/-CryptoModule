@@ -1,8 +1,8 @@
-#include "ResponseCodec.h"
+﻿#include "ResponseCodec.h"
 #include "Message.pb.h"
 #include "../../share/SimpleLogger.h"
  
-ResponseCodec::ResponseCodec(std::string encodedStr)
+ResponseCodec::ResponseCodec(const std::string& encodedStr)
 {
 	m_encodedStr = encodedStr;
 }
@@ -16,7 +16,7 @@ ResponseCodec::ResponseCodec(const ResponseInformation* respInfo)
 	m_respMsg.set_data(respInfo->data);
 }
 
-void ResponseCodec::initFromEncodedString(std::string encodedStr)
+void ResponseCodec::initFromEncodedString(const std::string& encodedStr)
 {
 	m_encodedStr = encodedStr;
 }
@@ -57,5 +57,5 @@ std::optional<ResponseInformation> ResponseCodec::decodeString()
 	resqInfo.serverId = m_respMsg.serverid();
 	resqInfo.data = m_respMsg.data();
 
-	return std::optional<ResponseInformation>(resqInfo);
+	return resqInfo;
 }

@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="codec">
+      <UniqueIdentifier>{634522c9-faa9-4e15-828c-f51b9219bf11}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -27,6 +30,21 @@
     <ClCompile Include="..\..\share\SimpleLogger.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\share\codec\RequestCodec.cpp">
+      <Filter>codec</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\share\codec\RequestCodecFactory.cpp">
+      <Filter>codec</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\share\codec\ResponseCodec.cpp">
+      <Filter>codec</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\share\codec\ResponseCodecFactory.cpp">
+      <Filter>codec</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\share\codec\Message.pb.cc">
+      <Filter>codec</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TcpClient.h">
@@ -37,6 +55,27 @@
     </ClInclude>
     <ClInclude Include="..\..\share\SimpleLogger.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\share\codec\Codec.hpp">
+      <Filter>codec</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\share\codec\CodecFactory.hpp">
+      <Filter>codec</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\share\codec\RequestCodec.h">
+      <Filter>codec</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\share\codec\RequestCodecFactory.h">
+      <Filter>codec</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\share\codec\ResponseCodec.h">
+      <Filter>codec</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\share\codec\ResponseCodecFactory.h">
+      <Filter>codec</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\share\codec\Message.pb.h">
+      <Filter>codec</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

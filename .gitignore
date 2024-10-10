@@ -21,3 +21,8 @@
 /Client/ClientCryptoModule/log.txt
 share/codec/Message.pb.cc
 share/codec/Message.pb.h
+/Client/ClientCryptoModule/x64/Debug/ResponseCodecFactory.obj
+/Client/ClientCryptoModule/x64/Debug/Message.pb.obj
+/Client/ClientCryptoModule/x64/Debug/RequestCodec.obj
+/Client/ClientCryptoModule/x64/Debug/RequestCodecFactory.obj
+/Client/ClientCryptoModule/x64/Debug/ResponseCodec.obj

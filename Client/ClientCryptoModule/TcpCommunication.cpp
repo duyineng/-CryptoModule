@@ -31,7 +31,7 @@ TcpCommunication::ErrorType TcpCommunication::sendMessage(const std::string& dat
 	// 数据准备
 	uint32_t dataSize = static_cast<uint32_t>(data.length());
 	uint32_t dataSizeNetByte = htonl(dataSize);				// 转换为网络字节序
-	uint32_t totalSize = dataSize + sizeof(uint32_t);	// 防止TCP粘包，多加4字节，用于指示数据长度
+	uint32_t totalSize = dataSize + sizeof(uint32_t);		// 防止TCP粘包，多加4字节，用于指示数据长度
 	std::vector<unsigned char> sendBuffer(totalSize);
 	
 	std::memcpy(sendBuffer.data(), &dataSizeNetByte, sizeof(uint32_t));
