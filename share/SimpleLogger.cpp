@@ -6,7 +6,7 @@
 
 SimpleLogger& SimpleLogger::getInstance()
 {
-    static SimpleLogger instance("log.txt");   // 懒汉模式，在C++1之后已经是线程安全的
+    static SimpleLogger instance("log.txt");   // 懒汉模式，在C++11之后已经是线程安全的
     return instance;
 }
 
